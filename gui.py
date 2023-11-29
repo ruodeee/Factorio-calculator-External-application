@@ -24,6 +24,8 @@ def findicon(tar):
         tar = "single-cylinder-engine"
     if tar == "electric-motor":
         tar = "small-electric-motor"
+    if tar == "se-rocket-science-pack":
+        tar = "orange"
     if tar.startswith("se-"):
         tar = tar.replace("se-","")
     print(f"Getting icon: {tar}")
@@ -40,7 +42,7 @@ def findicon(tar):
                 return b
     for mod in micons:
         for item in micons[mod]:
-            if item.filename.endswith(f"icons/{tar}.png"):
+            if item.filename.endswith(f"/{tar}.png"):
                 with ZipFile(mod) as myzip:
                     with myzip.open(item) as myfile:
                         print(f"icon found:{item}")
