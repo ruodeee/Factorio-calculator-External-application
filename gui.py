@@ -13,7 +13,6 @@ def setup(modfp):
     micons = IconExtractor.GetmodIcons(modfp)
     bicons = IconExtractor.GetBaseIcons(basefp)
 
-
 def show_image(tar):
     imagefile = findicon(tar)
     image = ImageTk.PhotoImage(data=io.BytesIO(imagefile).read())
@@ -47,15 +46,32 @@ def findicon(tar):
                         print(f"icon found:{item}")
                         image = myfile.read()
                         return image
-    
+    print(f"Icon not found: {tar}")
+    with open(f"placeholder.png", "rb") as image:
+                img = Image.open(f"placeholder.png")
+                image = img.crop((0,0,64,64))
+                image.save("test.png")
+                with open("test.png", "rb") as image:
+                    f = image.read()
+                    b = bytearray(f)
+                    return b
 
 def TreePop(item):
+    global ids
     ipms = ipm.get()
     tree.delete(*tree.get_children())
-    global ids
     ids = []
     global storedimgs
     recipes = FactorioCalc.GetRecipes(filepath)
+    for name in recipes:
+        if item in name:
+            if name.startswith("se-"):
+                item = name
+                break
+        if item == name:
+            item = name
+            break
+    print(recipes[item]['ingredients'])
     jsn = FactorioCalc.HumanFriendly(item)
     imagefile = findicon(item)
     image =ImageTk.PhotoImage(data=io.BytesIO(imagefile).read())
