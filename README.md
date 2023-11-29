@@ -1,1 +1,1 @@
-# Factorio-calculator-External-application-
+# Factorio-calculator (External-application)
