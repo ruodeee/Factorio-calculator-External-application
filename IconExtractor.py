@@ -1,4 +1,3 @@
-#penis for bob 8=D
 from zipfile import ZipFile
 import os
 import shutil

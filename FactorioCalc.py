@@ -34,11 +34,25 @@ def HumanFriendly(word):
     x = word.replace("-"," ")
     return x
 
-def NumOfAss(item,recipes,ipm):
+def NumOfAss(item,filepath,ipm,assembler):
+    assemblers = GetAssMachines(filepath)
+    recipes = GetRecipes(filepath)
     if item in recipes:
         ics = recipes[item]['energy']
         product = recipes[item]['products'][0]['amount']
-        x = ((float(ipm)/60)*ics)/0.5
+        x = ((float(ipm)/60)*ics)/assemblers[assembler]["crafting_speed"]
+        out = x/product
+    else:
+        out = 0 
+    return out
+
+def NumOfSmel(item,filepath,ipm,smelter):
+    furnaces = GetFurnace(filepath)
+    recipes = GetRecipes(filepath)
+    if item in recipes:
+        ics = recipes[item]['energy']
+        product = recipes[item]['products'][0]['amount']
+        x = ((float(ipm)/60)*ics)/furnaces[smelter]["crafting_speed"]
         out = x/product
     else:
         out = 0 

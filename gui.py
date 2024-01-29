@@ -6,12 +6,20 @@ import IconExtractor
 import io
 from zipfile import ZipFile
 import re
+import json 
 
 def setup(modfp):
     global micons 
     global bicons
+    global modlist
     micons = IconExtractor.GetmodIcons(modfp)
     bicons = IconExtractor.GetBaseIcons(basefp)
+    modlistjson = AssMachines = json.load(open(fr"{modfp}\mod-list.json"))
+    modlist = []
+    for i in modlistjson["mods"]:
+        if i["enabled"] == True:
+            modlist.append(i["name"])
+    
 
 def show_image(tar):
     imagefile = findicon(tar)
@@ -20,14 +28,20 @@ def show_image(tar):
     parent.image = image
 
 def findicon(tar):
-    if tar == "motor":
-        tar = "single-cylinder-engine"
-    if tar == "electric-motor":
-        tar = "small-electric-motor"
-    if tar == "se-rocket-science-pack":
-        tar = "orange"
-    if tar.startswith("se-"):
-        tar = tar.replace("se-","")
+    if "space-exploration" in modlist:
+        if tar == "se-rocket-science-pack":
+            tar = "orange"
+        if tar == "se-iron-ingot-to-plate":
+            tar = "iron-plate" 
+        if tar.startswith("se-"):
+            tar = tar.replace("se-","")
+    if "aai-industry" in modlist:
+        if tar == "motor":
+            tar = "single-cylinder-engine"
+        if tar == "electric-motor":
+            tar = "small-electric-motor"
+        if tar == "electronic-circuit-stone":
+            tar = "electronic-circuit"
     print(f"Getting icon: {tar}")
     for item in bicons:
         if item == (f"{tar}.png"):
@@ -79,20 +93,32 @@ def TreePop(item):
     image =ImageTk.PhotoImage(data=io.BytesIO(imagefile).read())
     storedimgs.append(image)
     a = float(ipms)/float(recipes[item]['products'][0]['amount'])
-    tree.insert('', tk.END,jsn, open=False,image= image, values=(f"{jsn}",recipes[item]['products'][0]['amount']*a,FactorioCalc.NumOfAss(item,recipes,ipms)))
+    if recipes[item]["category"] == "smelting":
+        tree.insert('', tk.END,jsn, open=False,image= image, values=(f"{jsn}",recipes[item]['products'][0]['amount']*a,0,FactorioCalc.NumOfSmel(item,filepath,ipms,FactorioCalc.JsonFriendly(furnaceDD.get()))))
+    else:
+        tree.insert('', tk.END,jsn, open=False,image= image, values=(f"{jsn}",recipes[item]['products'][0]['amount']*a,FactorioCalc.NumOfAss(item,recipes,ipms,FactorioCalc.JsonFriendly(AssemblersDD.get()))))
     items = FactorioCalc.GetSubIngredient(item,recipes)
+    print(f"ITEMS: {items}")
     for ingr in items:
         imagefile = findicon(ingr['name'])
         image =ImageTk.PhotoImage(data=io.BytesIO(imagefile).read())
         storedimgs.append(image)
         idn = f"{ingr['name']}0"
         ids.append(idn)
-        tree.insert(f'{jsn}', tk.END,idn, open=False,image= image, values=(f"{ingr['name']}",ingr['amount']*a,FactorioCalc.NumOfAss(ingr['name'],recipes,ingr['amount']*a)))
-        subitems = FactorioCalc.GetSubIngredient(ingr['name'],recipes)
+        tree.insert(f'{jsn}', tk.END,idn, open=False,image= image, values=(f"{ingr['name']}",ingr['amount']*a,FactorioCalc.NumOfAss(item,recipes,ipms,FactorioCalc.JsonFriendly(AssemblersDD.get()))))
+        if "space-exploration" in modlist:
+            if ingr['name'] == "electronic-circuit":
+                subitems = FactorioCalc.GetSubIngredient('electronic-circuit-stone',recipes)
+            else:
+                subitems = FactorioCalc.GetSubIngredient(ingr['name'],recipes)
+        else:
+            subitems = FactorioCalc.GetSubIngredient(ingr['name'],recipes)
+        print(f"SUBITEM: {subitems}")
         subingri(subitems,idn,a)
 
 def subingri(subitems,parent,ipm):
     recipes = FactorioCalc.GetRecipes(filepath)
+    ipms = ipm.get()
     for subingr in subitems:
         imagefile = findicon(subingr['name'])
         image =ImageTk.PhotoImage(data=io.BytesIO(imagefile).read())
@@ -105,7 +131,7 @@ def subingri(subitems,parent,ipm):
                     high = int(idno[-1])
             idn = f"{subingr['name']}{high+1}"
         ids.append(idn)
-        tree.insert(parent, tk.END,idn, open=False,image= image, values=(f"{subingr['name']}",subingr['amount']*ipm,FactorioCalc.NumOfAss(subingr['name'],recipes,subingr['amount']*ipm)))
+        tree.insert(parent, tk.END,idn, open=False,image= image, values=(f"{subingr['name']}",subingr['amount']*ipm,FactorioCalc.NumOfAss(item,recipes,ipms,FactorioCalc.JsonFriendly(AssemblersDD.get()))))
         sub = FactorioCalc.GetSubIngredient(subingr['name'],recipes)
         if sub != None:
             subingri(sub,idn,ipm)
@@ -114,6 +140,7 @@ filepath = r"C:\Users\rudyb\AppData\Roaming\Factorio\script-output\recipe-lister
 modfp= r"C:\Users\rudyb\AppData\Roaming\Factorio\mods"
 basefp = r"C:\Program Files (x86)\Steam\steamapps\common\Factorio\data\base\graphics\icons"
 setup(modfp)
+
 root = tk.Tk()
 root.title("Demo")
 root.geometry("750x900")
@@ -148,6 +175,7 @@ for item in furnace:
     temp.append(FactorioCalc.HumanFriendly(item))
 furnace = temp
 furnaceDD = ttk.Combobox(frame3, values=furnace, state='normal')
+furnaceDD.set("stone furnace")
 recipesDD.pack(side=tk.LEFT)
 AssemblersDD.pack(side=tk.LEFT)
 furnaceDD.pack(side=tk.LEFT)
@@ -179,6 +207,7 @@ tree.heading('#0', text='icon', anchor=tk.W)
 tree.heading('#1', text='Item', anchor=tk.W)
 tree.heading('#2', text='Ratios', anchor=tk.W)
 tree.heading('#3', text='Assemblers', anchor=tk.W)
+tree.heading('#4', text='Smelters', anchor=tk.W)
 tree.pack()
 
 root.mainloop()
