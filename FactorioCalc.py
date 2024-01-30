@@ -3,7 +3,7 @@ import json
 
 def GetSubIngredient(name,recipes):
     temp = []
-    print(name)
+    #print(name)
     if name in recipes:
         if len(recipes[name]['ingredients']) > 0:
             for ingredient in recipes[name]['ingredients']:
