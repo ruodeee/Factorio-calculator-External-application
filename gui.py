@@ -134,10 +134,10 @@ def subingri(subitems,parent,ipm):
         if subingr['name'].endswith("ore") or subingr['name'] == "stone" or subingr['name'] == "coal":
             tree.insert(parent, tk.END,idn, open=False,image= image, values=(f"{subingr['name']}",subingr['amount']*ipm,FactorioCalc.NumOfAss(subingr['name'],filepath,ipms,FactorioCalc.JsonFriendly(AssemblersDD.get()))))
         else:
-            if recipes[subingr['name']]["category"] == "smelting" or "kiln":
+            if recipes[subingr['name']]["category"] == "smelting" or recipes[subingr['name']]["category"] == "kiln":
                 tree.insert(parent, tk.END,idn, open=False,image= image, values=(f"{subingr['name']}",subingr['amount']*ipm,0,FactorioCalc.NumOfSmel(subingr['name'],filepath,ipm,FactorioCalc.JsonFriendly(furnaceDD.get()))))
             else:
-                tree.insert(parent, tk.END,idn, open=False,image= image, values=(f"{subingr['name']}",subingr['amount']*ipm,FactorioCalc.NumOfAss(subingr['name'],filepath,subingr['amount']*ipm,FactorioCalc.JsonFriendly(AssemblersDD.get()))))
+                tree.insert(parent, tk.END,idn, open=False,image= image, values=(f"{subingr['name']}",subingr['amount']*ipm,FactorioCalc.NumOfAss(subingr['name'],filepath,subingr['amount']*ipm,FactorioCalc.JsonFriendly(AssemblersDD.get())),0))
         sub = FactorioCalc.GetSubIngredient(subingr['name'],recipes)
         if sub != None:
             subingri(sub,idn,ipm)
