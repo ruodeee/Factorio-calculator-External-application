@@ -41,6 +41,8 @@ def findicon(tar):
             tar = "small-electric-motor"
         if tar == "electronic-circuit-stone":
             tar = "electronic-circuit"
+        if tar == "engine-unit":
+            tar = "multi-cylinder-engine"
     print(f"Getting icon: {tar}")
     for item in bicons:
         if item == (f"{tar}.png"):
@@ -140,6 +142,13 @@ def subingri(subitems,parent,ipm):
                 tree.insert(parent, tk.END,idn, open=False,image= image, values=(f"{subingr['name']}",subingr['amount']*ipm,FactorioCalc.NumOfAss(subingr['name'],filepath,subingr['amount']*ipm,FactorioCalc.JsonFriendly(AssemblersDD.get())),0))
         sub = FactorioCalc.GetSubIngredient(subingr['name'],recipes)
         if sub != None:
+            if "space-exploration" in modlist:
+                if subingr['name'] == "electronic-circuit":
+                    sub = FactorioCalc.GetSubIngredient('electronic-circuit-stone',recipes)
+                else:
+                    sub = FactorioCalc.GetSubIngredient(subingr['name'],recipes)
+            else:
+                sub = FactorioCalc.GetSubIngredient(subingr['name'],recipes)
             subingri(sub,idn,ipm)
 
 filepath = r"C:\Users\rudyb\AppData\Roaming\Factorio\script-output\recipe-lister"
