@@ -40,6 +40,7 @@ def NumOfAss(item,filepath,ipm,assembler):
     if item in recipes:
         ics = recipes[item]['energy']
         product = recipes[item]['products'][0]['amount']
+        print(f"{item},{product}")
         x = ((float(ipm)/60)*ics)/assemblers[assembler]["crafting_speed"]
         out = x/product
     else:

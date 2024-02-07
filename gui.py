@@ -107,6 +107,7 @@ def TreePop(item):
         idn = f"{ingr['name']}0"
         ids.append(idn)
         print(ingr)
+        
         tree.insert(f'{jsn}', tk.END,idn, open=False,image= image, values=(f"{ingr['name']}",ingr['amount']*a,FactorioCalc.NumOfAss(item,filepath,ingr['amount']*a/recipes[ingr["name"]]["products"][0]["amount"],FactorioCalc.JsonFriendly(AssemblersDD.get()))))
         if "space-exploration" in modlist:
             if ingr['name'] == "electronic-circuit":
