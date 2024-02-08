@@ -93,11 +93,11 @@ def TreePop(item):
     imagefile = findicon(item)
     image =ImageTk.PhotoImage(data=io.BytesIO(imagefile).read())
     storedimgs.append(image)
-    a = float(ipms)/float(recipes[item]['products'][0]['amount'])
+    ratio = float(ipms)/float(recipes[item]['products'][0]['amount'])
     if recipes[item]["category"] == "smelting":
-        tree.insert('', tk.END,jsn, open=False,image= image, values=(f"{jsn}",recipes[item]['products'][0]['amount']*a,0,FactorioCalc.NumOfSmel(item,filepath,ipms,FactorioCalc.JsonFriendly(furnaceDD.get()))))
+        tree.insert('', tk.END,jsn, open=False,image= image, values=(f"{jsn}",ipms,0,FactorioCalc.NumOfSmel(item,filepath,ipms,FactorioCalc.JsonFriendly(furnaceDD.get()))))
     else:
-        tree.insert('', tk.END,jsn, open=False,image= image, values=(f"{jsn}",recipes[item]['products'][0]['amount']*a,FactorioCalc.NumOfAss(item,filepath,ipms,FactorioCalc.JsonFriendly(AssemblersDD.get()))))
+        tree.insert('', tk.END,jsn, open=False,image= image, values=(f"{jsn}",ipms,FactorioCalc.NumOfAss(item,filepath,ipms,FactorioCalc.JsonFriendly(AssemblersDD.get()))))
     items = FactorioCalc.GetSubIngredient(item,recipes)
     print(f"ITEMS: {items}")
     for ingr in items:
@@ -107,8 +107,7 @@ def TreePop(item):
         idn = f"{ingr['name']}0"
         ids.append(idn)
         print(ingr)
-        
-        tree.insert(f'{jsn}', tk.END,idn, open=False,image= image, values=(f"{ingr['name']}",ingr['amount']*a,FactorioCalc.NumOfAss(item,filepath,ingr['amount']*a/recipes[ingr["name"]]["products"][0]["amount"],FactorioCalc.JsonFriendly(AssemblersDD.get()))))
+        tree.insert(f'{jsn}', tk.END,idn, open=False,image= image, values=(f"{ingr['name']}",ingr['amount']*ratio,FactorioCalc.NumOfAss(ingr['name'],filepath,ingr['amount']*ratio,FactorioCalc.JsonFriendly(AssemblersDD.get()))))
         if "space-exploration" in modlist:
             if ingr['name'] == "electronic-circuit":
                 subitems = FactorioCalc.GetSubIngredient('electronic-circuit-stone',recipes)
@@ -117,7 +116,7 @@ def TreePop(item):
         else:
             subitems = FactorioCalc.GetSubIngredient(ingr['name'],recipes)
         print(f"SUBITEM: {subitems}")
-        subingri(subitems,idn,a)
+        subingri(subitems,idn,ratio)
 
 def subingri(subitems,parent,ipm):
     recipes = FactorioCalc.GetRecipes(filepath)
@@ -205,7 +204,7 @@ treeB = tk.Button(frame,text="TreeB", command= lambda:TreePop(FactorioCalc.JsonF
 treeB.pack(side=tk.LEFT)
 #IPM input
 entry_float = tk.DoubleVar()
-entry_float.set(1.0)
+entry_float.set(60.0)
 ipm = ttk.Entry(frame3,textvariable=entry_float)
 ipm.pack(side=tk.LEFT)
 

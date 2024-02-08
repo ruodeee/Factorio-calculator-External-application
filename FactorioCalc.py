@@ -40,7 +40,7 @@ def NumOfAss(item,filepath,ipm,assembler):
     if item in recipes:
         ics = recipes[item]['energy']
         product = recipes[item]['products'][0]['amount']
-        print(f"{item},{product}")
+        print(f"{item},{product},{ics},{assemblers[assembler]['crafting_speed']},{ipm}")
         x = ((float(ipm)/60)*ics)/assemblers[assembler]["crafting_speed"]
         out = x/product
     else:
@@ -81,23 +81,9 @@ def GetFurnace(filepath):
     Furnace = temp
     return Furnace
 
-def GetRatio(item,ipm):
-    temp = []
-    ratio = []
-    temp.append(recipes[item]['products'][0])
-    for Ingredient in recipes[item]['ingredients']:
-        temp.append(Ingredient)
-    a = ipm/temp[0]['amount']
-    for item in temp:
-        b = a*item['amount']
-        ratio.append(b)
-    return ratio
-
 def GetRecipes(filepath):
     recipes = json.load(open(fr"{filepath}\recipe.json"))
     return recipes
-
-ipm = 60.0
 
 if __name__ == "__main__":
     filepath = r"C:\Users\rudyb\AppData\Roaming\Factorio\script-output\recipe-lister"
